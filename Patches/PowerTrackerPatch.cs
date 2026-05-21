@@ -14,7 +14,7 @@ namespace PowerTracker.Patches
         static void Postfix(NotificationManager __instance)
         {
             Log.LogInfo("[PT] NotificationManager.Awake postfix — injecting");
-            PowerTrackerInjector.Inject(__instance, Log);
+            PowerTrackerInjector.Inject(__instance, Log, Plugin.TrackerConfig);
         }
     }
 }

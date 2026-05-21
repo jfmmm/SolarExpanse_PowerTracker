@@ -5,7 +5,7 @@ using PowerTracker.UI;
 
 namespace PowerTracker
 {
-    [BepInPlugin("com.mod.solarexpanse.powertracker", "PowerTracker", "1.0.0")]
+    [BepInPlugin("com.mod.solarexpanse.powertracker", "PowerTracker", "1.1.0")]
     public class Plugin : BaseUnityPlugin
     {
         internal static PowerTrackerConfig TrackerConfig;
