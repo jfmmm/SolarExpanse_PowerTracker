@@ -20,6 +20,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using PowerTracker.Patches;
 
 namespace PowerTracker.UI
 {
@@ -189,6 +190,7 @@ namespace PowerTracker.UI
                 resizeHandleGO.AddComponent<ResizeHandle>().PanelRT = panelRT;
 
                 panelGO.SetActive(false);
+                PauseScreenEscPatch.PanelGO = panelGO;
 
                 PowerTrackerPanel tracker = panelGO.AddComponent<PowerTrackerPanel>();
                 tracker.ContentParent     = contentGO.transform;
@@ -1910,6 +1912,8 @@ namespace PowerTracker.UI
         private Vector2 _dragStartAnchoredPos;
         private Vector2 _pressScreenPos;
         private Vector2 _lastCanvasSize;
+        private Vector2 _normalizedPos;
+        private bool _normalizedPosSet;
 
         private void Awake()
         {
@@ -1920,6 +1924,7 @@ namespace PowerTracker.UI
 
         private IEnumerator Start()
         {
+            yield return null;
             yield return null;
             PositionNextToNotificationButton();
         }
@@ -1940,8 +1945,28 @@ namespace PowerTracker.UI
             if (_canvasRT != null)
             {
                 Vector2 sz = _canvasRT.rect.size;
-                if (sz != _lastCanvasSize) { _lastCanvasSize = sz; Clamp(); RepositionPanel(); }
+                if (sz != _lastCanvasSize) { _lastCanvasSize = sz; RestoreFromNormalizedPos(); RepositionPanel(); }
             }
+        }
+
+        private void StoreNormalizedPos()
+        {
+            if (_canvasRT == null) return;
+            Rect cr = _canvasRT.rect;
+            if (cr.xMax <= 0f || cr.yMax <= 0f) return;
+            _normalizedPos = new Vector2(_rt.anchoredPosition.x / cr.xMax, _rt.anchoredPosition.y / cr.yMax);
+            _normalizedPosSet = true;
+        }
+
+        private void RestoreFromNormalizedPos()
+        {
+            if (_canvasRT == null) return;
+            if (_normalizedPosSet)
+            {
+                Rect cr = _canvasRT.rect;
+                _rt.anchoredPosition = new Vector2(_normalizedPos.x * cr.xMax, _normalizedPos.y * cr.yMax);
+            }
+            Clamp();
         }
 
         private void PositionNextToNotificationButton()
@@ -1960,6 +1985,7 @@ namespace PowerTracker.UI
             }
             float x = btnTopLeft.x - 10f - _rt.sizeDelta.x;
             _rt.anchoredPosition = new Vector2(x, btnTopLeft.y - 5f - 17f);
+            StoreNormalizedPos();
             Log?.LogInfo($"[PT] indicator at {_rt.anchoredPosition}");
         }
 
@@ -1988,7 +2014,7 @@ namespace PowerTracker.UI
             Clamp(); RepositionPanel();
         }
 
-        public void OnEndDrag(PointerEventData e) { Clamp(); RepositionPanel(); if (Bg) Bg.color = NormalColor; }
+        public void OnEndDrag(PointerEventData e) { Clamp(); StoreNormalizedPos(); RepositionPanel(); if (Bg) Bg.color = NormalColor; }
 
         private void Clamp()
         {
@@ -2093,6 +2119,8 @@ namespace PowerTracker.UI
             _timer += Time.deltaTime;
             if (_timer >= PowerTrackerPanel.RefreshInterval) { _timer = 0f; Tracker?.RefreshRows(); }
         }
+
+        private void LateUpdate() => Patches.PauseScreenEscPatch.LateUpdateTick();
     }
 
     // ── Per-body/facility alert threshold config ──────────────────────────────
@@ -2237,4 +2265,5 @@ namespace PowerTracker.UI
         private static string Unesc(string s)
             => s.Replace("\\=", "=").Replace("\\;", ";").Replace("\\\\", "\\");
     }
+
 }

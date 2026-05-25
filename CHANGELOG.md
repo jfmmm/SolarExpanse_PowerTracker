@@ -5,9 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-25
+
+### Added
+- ESC key closes the panel.
+
+### Fixed
+- POWER button snaps back to correct relative position after screen resize or fullscreen toggle instead of drifting to its old absolute coordinates.
+
 ## [1.1.0] - 2026-05-20
 ### Added
-- Facility sub-rows and sub-header now have a dark background for clear visual separation from body rows.
 - Threshold panel info box has a **GOT IT** dismiss button — hides the notice permanently (saved to config).
 
 ### Fixed
