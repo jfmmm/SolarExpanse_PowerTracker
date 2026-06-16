@@ -1001,6 +1001,7 @@ namespace PowerTracker.UI
                 var bodies = new List<BodyData>();
                 foreach (ObjectInfo oi in allObjects)
                 {
+                    if (oi.IsInGameDestroy) continue; // skip crashed/destroyed bodies — game keeps them in allObjectInfos
                     ObjectInfoData data = oi.GetObjectInfoData(player);
                     if (data == null) continue;
 
