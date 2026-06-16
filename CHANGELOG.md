@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-06-16
+
 ### Fixed
 - Crashed/destroyed asteroids no longer appear as ghost entries. The game keeps destroyed bodies in its master object list (`allObjectInfos`) and only hides them visually, so a body with residual battery or power values could linger in the panel after crashing. Bodies are now filtered out using the game's `IsInGameDestroy` flag.
 
